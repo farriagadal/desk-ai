@@ -1,33 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-  <!-- Desk AI en tamaños chicos (16-40 px): esfera más grande, 3 barras gruesas e insignia de Claude simplificada. -->
+  <!-- Desk AI en tamaños chicos (16-40 px, bandeja del sistema): solo la esfera, ocupando todo el ícono, con 3 barras gruesas. -->
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#2a1f4d"/>
-      <stop offset="1" stop-color="#0d0b18"/>
-    </linearGradient>
     <linearGradient id="orb" x1="0.15" y1="0.1" x2="0.85" y2="0.95">
-      <stop offset="0" stop-color="#b79cff"/>
+      <stop offset="0" stop-color="#c4adff"/>
       <stop offset="0.45" stop-color="#8b5cf6"/>
       <stop offset="1" stop-color="#22d3ee"/>
     </linearGradient>
   </defs>
-  <rect width="1024" height="1024" rx="232" fill="url(#bg)"/>
-  <circle cx="480" cy="560" r="392" fill="url(#orb)"/>
+  <circle cx="512" cy="512" r="508" fill="url(#orb)"/>
   <g fill="#fff">
-    <rect x="270" y="440" width="110" height="240" rx="55"/>
-    <rect x="425" y="320" width="110" height="480" rx="55"/>
-    <rect x="580" y="440" width="110" height="240" rx="55"/>
-  </g>
-  <circle cx="806" cy="218" r="204" fill="#0d0b18"/>
-  <circle cx="806" cy="218" r="168" fill="#d97757"/>
-  <g transform="translate(806 218)" stroke="#fff" stroke-width="46" stroke-linecap="round">
-    <line x1="0" y1="0" x2="0" y2="-104"/>
-    <line x1="0" y1="0" x2="0" y2="-104" transform="rotate(45)"/>
-    <line x1="0" y1="0" x2="0" y2="-104" transform="rotate(90)"/>
-    <line x1="0" y1="0" x2="0" y2="-104" transform="rotate(135)"/>
-    <line x1="0" y1="0" x2="0" y2="-104" transform="rotate(180)"/>
-    <line x1="0" y1="0" x2="0" y2="-104" transform="rotate(225)"/>
-    <line x1="0" y1="0" x2="0" y2="-104" transform="rotate(270)"/>
-    <line x1="0" y1="0" x2="0" y2="-104" transform="rotate(315)"/>
+    <rect x="232" y="377" width="140" height="270" rx="70"/>
+    <rect x="442" y="197" width="140" height="630" rx="70"/>
+    <rect x="652" y="377" width="140" height="270" rx="70"/>
   </g>
 </svg>

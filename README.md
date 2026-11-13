@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo.png" width="128" alt="Desk AI">
+  <img src="assets/logo-claude.png" width="140" alt="Desk AI + Claude">
 </p>
 
 <h1 align="center">Desk AI</h1>
@@ -99,7 +99,8 @@ La ventana de Desk AI se excluye de sus propias capturas.
 | `tray.py` | Ícono en la bandeja del sistema |
 | `ui/` | Interfaz (HTML/CSS/JS con pywebview) |
 | `landing/` | Sitio web del proyecto |
-| `tools/make_logo.py` | Genera el logo y los íconos |
+| `assets/` | Logo e íconos en SVG (`logo-claude.svg` es la versión con la integración de Claude) |
+| `tools/make_logo.py` | Genera los PNG/ICO a partir de los SVG |
 
 ## Licencia
 

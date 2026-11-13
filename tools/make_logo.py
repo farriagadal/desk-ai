@@ -1,8 +1,7 @@
-"""Genera los íconos de Desk AI a partir de assets/logo.svg y assets/logo-small.svg.
+"""Genera los íconos de Desk AI a partir de los SVG de assets/ (escritos a mano), rasterizándolos con Chrome.
 
-Los SVG son la fuente (escritos a mano); este script los rasteriza con Chrome en modo headless y arma
-assets/logo.png, assets/icon.ico (con la versión simplificada en 16-40 px, para la bandeja del sistema) y las
-imágenes de landing/ (logos, favicon, apple-touch-icon y la imagen para compartir en redes).
+- logo.svg / logo-small.svg: ícono de la app, sin Claude (ventana, bandeja, favicon). logo-small se usa en 16-40 px.
+- logo-claude.svg: logo con la insignia de integración de Claude, solo para el README, la landing y redes.
 """
 
 import os
@@ -72,14 +71,16 @@ def main():
     os.makedirs(LANDING, exist_ok=True)
     full = rasterize(os.path.join(ASSETS, "logo.svg"))
     small = rasterize(os.path.join(ASSETS, "logo-small.svg"))
+    claude = rasterize(os.path.join(ASSETS, "logo-claude.svg"))
     at = lambda img, n: img.resize((n, n), Image.LANCZOS)
 
     full.save(os.path.join(ASSETS, "logo.png"))
-    shutil.copy(os.path.join(ASSETS, "logo.svg"), os.path.join(LANDING, "logo.svg"))
-    at(full, 512).save(os.path.join(LANDING, "logo.png"))
+    claude.save(os.path.join(ASSETS, "logo-claude.png"))
+    for name in ("logo.svg", "logo-claude.svg"):
+        shutil.copy(os.path.join(ASSETS, name), os.path.join(LANDING, name))
     at(full, 180).save(os.path.join(LANDING, "apple-touch-icon.png"))
     at(small, 64).save(os.path.join(LANDING, "favicon.png"))
-    og_image(full, os.path.join(LANDING, "og.png"))
+    og_image(claude, os.path.join(LANDING, "og.png"))
 
     sizes = [16, 20, 24, 32, 40, 48, 64, 128, 256]
     frames = [at(small if n <= 40 else full, n) for n in sizes]
