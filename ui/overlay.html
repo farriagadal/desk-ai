@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Desk AI · Overlay</title>
+  <link rel="stylesheet" href="overlay.css">
+</head>
+<body>
+  <div id="card" class="card idle">
+    <div class="accent"></div>
+    <header>
+      <div class="state">
+        <span class="ind"><i></i><i></i><i></i></span>
+        <span id="state-text">Listo</span>
+      </div>
+      <div class="side">
+        <span id="timer"></span>
+        <span id="shots" class="chip"></span>
+        <span id="voice" class="chip"></span>
+      </div>
+    </header>
+    <div class="wave" id="wave"></div>
+    <div class="q" id="q"></div>
+    <div class="a" id="a"></div>
+    <footer>
+      <span id="status"></span>
+      <span class="keys" id="keys"></span>
+    </footer>
+  </div>
+
+  <script src="vendor/marked.min.js"></script>
+  <script src="overlay.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+faster-whisper>=1.2
+mss
+sounddevice
+numpy
+pillow
+nvidia-cublas-cu12
+nvidia-cudnn-cu12>=9,<10
+edge-tts>=7
+pywebview>=6
+pystray
+pythonnet>=3

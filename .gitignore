@@ -1,0 +1,14 @@
+# Configuración y datos locales
+.env
+rutinas.json
+.overlay_pos.json
+
+# Respaldos y caché
+*.bak
+*.bak[0-9]*
+__pycache__/
+*.pyc
+
+# Landing (Vercel)
+landing/.vercel/
+.vercel/

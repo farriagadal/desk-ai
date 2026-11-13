@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Desk AI</title>
+  <link rel="stylesheet" href="vendor/hljs-dark.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="resizers">
+    <div data-edge="n"></div><div data-edge="s"></div><div data-edge="w"></div><div data-edge="e"></div>
+    <div data-edge="nw"></div><div data-edge="ne"></div><div data-edge="sw"></div><div data-edge="se"></div>
+  </div>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo" data-icon="sparkles"></div>
+      <span class="name">Desk AI</span>
+      <span class="pill" id="model-pill">Claude</span>
+    </div>
+    <div class="top-actions">
+      <label class="select-pill" title="Voz de lectura">
+        <span data-icon="voice"></span>
+        <select id="voice-select"></select>
+      </label>
+      <button class="chip-btn" id="voice-btn" title="Lectura en voz alta"></button>
+      <button class="chip-btn" id="overlay-btn" title="Modo overlay para jugar: tarjeta compacta encima del juego"><span data-icon="layers"></span><span>Overlay</span><kbd data-hk="overlay"></kbd></button>
+      <button class="icon-btn" id="reset-btn" title="Nueva conversación" data-icon="plus"></button>
+      <div class="win-btns">
+        <button class="win-btn" id="min-btn" title="Minimizar" data-icon="minus"></button>
+        <button class="win-btn close" id="close-btn" title="Cerrar" data-icon="x"></button>
+      </div>
+    </div>
+  </header>
+
+  <main id="scroller">
+    <div id="chat">
+      <section id="empty" class="empty">
+        <div class="orb"><span data-icon="sparkles"></span></div>
+        <h1>¿En qué te ayudo?</h1>
+        <p class="sub">Muéstrame tu pantalla y pregúntame lo que quieras, por voz o escribiendo.</p>
+        <div class="cards">
+          <div class="card">
+            <div class="card-icon" data-icon="zap"></div>
+            <div class="card-title">Todo en uno</div>
+            <div class="card-body">Mantén <kbd data-hk="all"></kbd> para capturar y hablar. Al soltar se envía solo.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon" data-icon="steps"></div>
+            <div class="card-title">Paso a paso</div>
+            <div class="card-body">Captura con <kbd data-hk="shot"></kbd>, dicta manteniendo <kbd data-hk="mic"></kbd> y envía con <kbd data-hk="send"></kbd>.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon" data-icon="volume"></div>
+            <div class="card-title">Voz</div>
+            <div class="card-body"><kbd data-hk="voice"></kbd> calla la respuesta hablada o activa la lectura en voz alta.</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="dock">
+    <div class="composer" id="composer">
+      <div class="attachments" id="attachments"></div>
+
+      <div class="rec-strip">
+        <span class="rec-dot"></span>
+        <span class="rec-text" id="rec-text">Grabando… suelta para terminar</span>
+        <div class="wave" id="wave"></div>
+        <span class="rec-time" id="rec-time">0:00</span>
+      </div>
+
+      <textarea id="prompt" rows="1" placeholder="Escribe o dicta tu consulta…"></textarea>
+
+      <div class="toolbar">
+        <div class="tools">
+          <label class="select-pill small" title="Pantalla a capturar">
+            <span data-icon="monitor"></span>
+            <select id="monitor-select"></select>
+          </label>
+          <button class="tool" id="shot-btn"><span data-icon="camera"></span><span>Capturar</span><kbd data-hk="shot"></kbd></button>
+          <button class="tool" id="mic-btn"><span data-icon="mic"></span><span>Hablar</span><kbd data-hk="mic"></kbd></button>
+          <button class="tool accent" id="all-btn"><span data-icon="zap"></span><span>Todo</span><kbd data-hk="all"></kbd></button>
+        </div>
+        <button class="send" id="send-btn" title="Enviar"><span data-icon="arrow"></span></button>
+      </div>
+    </div>
+
+    <div class="statusbar">
+      <span class="status-dot" id="status-dot"></span>
+      <span class="status-text" id="status-text">Iniciando…</span>
+      <span class="hint">Enter envía · Shift+Enter nueva línea</span>
+    </div>
+  </footer>
+
+  <div class="lightbox" id="lightbox"><img alt=""></div>
+
+  <script src="vendor/marked.min.js"></script>
+  <script src="vendor/highlight.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

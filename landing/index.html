@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Desk AI — Tu asistente de voz para Windows, tipo Jarvis</title>
+  <meta name="description" content="Mantén Ctrl+Win, habla, y Claude ve tu pantalla, te responde en voz alta y controla tu PC sin sacar las manos del juego. Código abierto.">
+  <meta property="og:title" content="Desk AI — Asistente de voz tipo Jarvis para Windows">
+  <meta property="og:description" content="Mantén Ctrl+Win y habla: Claude ve tu pantalla, responde en voz alta y controla Spotify, YouTube, Discord y tus ventanas. Gratis y de código abierto.">
+  <meta property="og:image" content="/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#0b0a12">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0a12; --panel: #13121d; --panel-2: #1a1826; --line: #262338; --text: #ecebf5; --muted: #9a97b0;
+      --violet: #8b5cf6; --cyan: #22d3ee; --grad: linear-gradient(135deg, var(--violet), var(--cyan));
+    }
+    * { box-sizing: border-box; margin: 0; }
+    html { scroll-behavior: smooth; overflow-x: clip; }
+    body { overflow-x: clip; }
+    body { background: var(--bg); color: var(--text); font: 16px/1.6 Inter, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; text-decoration: none; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+    .grad-text { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+    /* Navegación */
+    nav { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(14px); background: rgba(11, 10, 18, .72); border-bottom: 1px solid rgba(38, 35, 56, .6); }
+    nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; }
+    .brand img { width: 30px; height: 30px; }
+    .links { display: flex; gap: 28px; align-items: center; color: var(--muted); font-size: 15px; }
+    .links a:hover { color: var(--text); }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 12px; font-weight: 600; font-size: 15px; transition: transform .15s, box-shadow .15s, background .15s; }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { background: var(--grad); color: #fff; box-shadow: 0 8px 30px -8px rgba(139, 92, 246, .6); }
+    .btn-primary:hover { box-shadow: 0 12px 40px -8px rgba(34, 211, 238, .55); }
+    .btn-ghost { border: 1px solid var(--line); background: var(--panel); }
+    .btn-ghost:hover { background: var(--panel-2); }
+    .btn-sm { padding: 8px 14px; font-size: 14px; border-radius: 10px; }
+    svg.ico { width: 18px; height: 18px; fill: currentColor; }
+
+    /* Portada */
+    .hero { position: relative; padding: 96px 0 72px; overflow: hidden; }
+    .hero::before { content: ""; position: absolute; inset: -40% -10% auto; height: 760px; background:
+      radial-gradient(closest-side, rgba(139, 92, 246, .28), transparent 70%) 20% 30% / 60% 70% no-repeat,
+      radial-gradient(closest-side, rgba(34, 211, 238, .18), transparent 70%) 85% 40% / 50% 60% no-repeat; pointer-events: none; }
+    .hero .wrap { position: relative; display: grid; grid-template-columns: 1.05fr .95fr; gap: 56px; align-items: center; }
+    .pill { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); color: var(--muted); font-size: 13px; margin-bottom: 22px; }
+    .pill b { color: var(--text); font-weight: 600; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #34d399; box-shadow: 0 0 10px #34d399; }
+    h1 { font-size: clamp(40px, 5.6vw, 64px); line-height: 1.04; letter-spacing: -.035em; font-weight: 800; }
+    .lead { margin: 22px 0 32px; font-size: 19px; color: var(--muted); max-width: 540px; }
+    .lead kbd { font: 600 15px Inter; }
+    .ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+    .meta { margin-top: 22px; color: var(--muted); font-size: 14px; display: flex; gap: 18px; flex-wrap: wrap; }
+    .meta span::before { content: "✓ "; color: var(--cyan); }
+    kbd { display: inline-block; padding: 2px 8px; border-radius: 7px; border: 1px solid var(--line); border-bottom-width: 3px; background: var(--panel-2); color: var(--text); font: 600 13px Inter; }
+
+    /* Demo del overlay */
+    .demo { position: relative; aspect-ratio: 4 / 3.1; border-radius: 22px; border: 1px solid var(--line); overflow: hidden;
+      background: linear-gradient(160deg, #1d2a3a 0%, #14202c 40%, #0f1720 100%); box-shadow: 0 40px 120px -40px rgba(139, 92, 246, .45); }
+    .demo .game { position: absolute; inset: 0; background:
+      radial-gradient(circle at 30% 70%, rgba(52, 211, 153, .18), transparent 30%),
+      radial-gradient(circle at 70% 60%, rgba(239, 68, 68, .16), transparent 25%),
+      repeating-linear-gradient(45deg, rgba(255,255,255,.025) 0 2px, transparent 2px 22px); }
+    .demo .hud { position: absolute; left: 18px; bottom: 16px; display: flex; gap: 8px; }
+    .demo .hud i { width: 34px; height: 34px; border-radius: 8px; background: rgba(0,0,0,.4); border: 1px solid rgba(255,255,255,.12); }
+    .demo .hp { position: absolute; left: 18px; bottom: 58px; width: 180px; height: 10px; border-radius: 5px; background: rgba(0,0,0,.45); overflow: hidden; }
+    .demo .hp::after { content: ""; position: absolute; inset: 0 30% 0 0; background: linear-gradient(90deg, #22c55e, #4ade80); }
+    .card { position: absolute; top: 18px; right: 18px; width: min(330px, 78%); padding: 14px 16px; border-radius: 16px;
+      background: rgba(19, 18, 29, .86); border: 1px solid rgba(139, 92, 246, .35); backdrop-filter: blur(10px); box-shadow: 0 20px 50px -20px #000; }
+    .card-head { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+    .card-head img { width: 16px; height: 16px; }
+    .state { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+    .state .rec { width: 7px; height: 7px; border-radius: 50%; background: #f43f5e; animation: blink 1s infinite; }
+    .q { font-size: 13px; color: #c9c6da; margin-bottom: 8px; min-height: 20px; }
+    .q s { text-decoration: line-through; opacity: .55; }
+    .a { font-size: 14px; line-height: 1.5; min-height: 64px; }
+    .wave { display: flex; gap: 3px; align-items: center; height: 22px; margin-top: 8px; }
+    .wave span { width: 3px; border-radius: 2px; background: var(--grad); animation: wave 1s ease-in-out infinite; }
+    .wave span:nth-child(2n) { animation-delay: .15s } .wave span:nth-child(3n) { animation-delay: .3s } .wave span:nth-child(5n) { animation-delay: .45s }
+    .keys { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); display: flex; gap: 6px; align-items: center; color: var(--muted); font-size: 12px; opacity: 0; transition: opacity .3s; }
+    .keys.on { opacity: 1; }
+    .keys.on kbd { background: var(--violet); border-color: #6d28d9; color: #fff; }
+    @keyframes blink { 50% { opacity: .2 } }
+    @keyframes wave { 0%, 100% { height: 4px } 50% { height: 20px } }
+
+    /* Secciones */
+    section { padding: 88px 0; }
+    .eyebrow { color: var(--cyan); font-weight: 600; font-size: 14px; letter-spacing: .08em; text-transform: uppercase; }
+    h2 { font-size: clamp(30px, 3.6vw, 42px); letter-spacing: -.03em; line-height: 1.12; margin: 10px 0 14px; font-weight: 800; }
+    .sub { color: var(--muted); max-width: 620px; font-size: 17px; }
+    .center { text-align: center; } .center .sub { margin: 0 auto; }
+
+    .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 48px; }
+    .step { padding: 24px; border-radius: 18px; background: var(--panel); border: 1px solid var(--line); }
+    .step .n { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; font-weight: 700; background: var(--grad); margin-bottom: 16px; }
+    .step h3 { font-size: 17px; margin-bottom: 6px; }
+    .step p { color: var(--muted); font-size: 15px; }
+
+    .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 48px; }
+    .feat { padding: 26px; border-radius: 18px; background: linear-gradient(180deg, var(--panel-2), var(--panel)); border: 1px solid var(--line); transition: border-color .2s, transform .2s; }
+    .feat:hover { border-color: rgba(139, 92, 246, .5); transform: translateY(-2px); }
+    .feat .emoji { font-size: 26px; margin-bottom: 14px; }
+    .feat h3 { font-size: 17px; margin-bottom: 6px; }
+    .feat p { color: var(--muted); font-size: 15px; }
+    .feat .say { margin-top: 12px; font-size: 13px; color: #c4b5fd; font-style: italic; }
+
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+    .split > div, .hero .wrap > div { min-width: 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 28px; font-size: 15px; }
+    td { padding: 13px 0; border-bottom: 1px solid var(--line); }
+    td:first-child { width: 42%; }
+    td:last-child { color: var(--muted); }
+    pre { margin-top: 28px; padding: 22px; border-radius: 16px; background: #08070d; border: 1px solid var(--line); overflow-x: auto; font: 500 14px/1.8 "JetBrains Mono", monospace; color: #d6d3e8; }
+    pre .c { color: #6b6884; }
+    .req { margin-top: 18px; color: var(--muted); font-size: 14px; }
+    .req a { color: var(--cyan); }
+
+    .faq { max-width: 760px; margin: 40px auto 0; }
+    details { border-bottom: 1px solid var(--line); padding: 18px 0; }
+    summary { cursor: pointer; font-weight: 600; font-size: 17px; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+    summary::after { content: "+"; color: var(--muted); font-size: 22px; line-height: 1; }
+    details[open] summary::after { content: "–"; }
+    details p { color: var(--muted); margin-top: 10px; }
+
+    .cta { padding: 64px 24px; border-radius: 28px; text-align: center; position: relative; overflow: hidden; border: 1px solid var(--line);
+      background: radial-gradient(ellipse at top, rgba(139, 92, 246, .25), transparent 60%), radial-gradient(ellipse at bottom right, rgba(34, 211, 238, .18), transparent 55%), var(--panel); }
+    .cta img { width: 72px; margin-bottom: 18px; }
+    .cta .ctas { justify-content: center; margin-top: 28px; }
+    footer { padding: 48px 0; color: var(--muted); font-size: 14px; }
+    footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+    @media (max-width: 900px) {
+      .hero .wrap, .split { grid-template-columns: 1fr; }
+      .steps { grid-template-columns: 1fr 1fr; }
+      .features { grid-template-columns: 1fr 1fr; }
+      .links a:not(.btn) { display: none; }
+    }
+    @media (max-width: 560px) {
+      .steps, .features { grid-template-columns: 1fr; }
+      .hero { padding-top: 56px; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="wrap">
+      <a class="brand" href="#"><img src="/logo.svg" alt="">Desk AI</a>
+      <div class="links">
+        <a href="#como">Cómo funciona</a>
+        <a href="#funciones">Funciones</a>
+        <a href="#instalar">Instalar</a>
+        <a href="#faq">Preguntas</a>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/farriagadal/desk-ai">
+          <svg class="ico" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="wrap">
+      <div>
+        <div class="pill"><span class="dot"></span><b>Código abierto</b> · Windows · gratis</div>
+        <h1>Tu asistente de voz <span class="grad-text">tipo Jarvis</span> para Windows.</h1>
+        <p class="lead">Mantén <kbd>Ctrl</kbd> + <kbd>Win</kbd> y habla. Desk AI ve tu pantalla, te responde en voz alta y controla tu PC — sin sacar las manos del juego.</p>
+        <div class="ctas">
+          <a class="btn btn-primary" href="https://github.com/farriagadal/desk-ai#instalación">Descargar gratis</a>
+          <a class="btn btn-ghost" href="https://github.com/farriagadal/desk-ai">
+            <svg class="ico" viewBox="0 0 16 16"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg>
+            Estrella en GitHub
+          </a>
+        </div>
+        <div class="meta"><span>Whisper local en tu GPU</span><span>Con tu suscripción de Claude</span><span>Sin API keys</span></div>
+      </div>
+
+      <div class="demo" aria-label="Demostración del overlay de Desk AI sobre un juego">
+        <div class="game"></div>
+        <div class="hp"></div>
+        <div class="hud"><i></i><i></i><i></i><i></i></div>
+        <div class="card">
+          <div class="card-head"><img src="/logo.svg" alt="">Desk AI<span class="state" id="state"></span></div>
+          <div class="q" id="q"></div>
+          <div class="a" id="a"></div>
+        </div>
+        <div class="keys" id="keys"><kbd>Ctrl</kbd>+<kbd>Win</kbd> mantenido</div>
+      </div>
+    </div>
+  </header>
+
+  <section id="como">
+    <div class="wrap center">
+      <div class="eyebrow">Cómo funciona</div>
+      <h2>Habla. Escucha. Sigue jugando.</h2>
+      <p class="sub">Todo pasa en segundos y sin cambiar de ventana: el overlay se queda encima del juego sin quitarle el foco.</p>
+      <div class="steps" style="text-align:left">
+        <div class="step"><div class="n">1</div><h3>Mantén Ctrl+Win</h3><p>Graba tu voz y toma una captura de la pantalla donde estás jugando.</p></div>
+        <div class="step"><div class="n">2</div><h3>Whisper transcribe</h3><p>En tu propia GPU, gratis y privado. Si el juego la ocupa, la CPU entra de respaldo.</p></div>
+        <div class="step"><div class="n">3</div><h3>Claude piensa</h3><p>Opus responde rápido y, si la pregunta es difícil, se toma más tiempo. Solo mira la pantalla si hace falta.</p></div>
+        <div class="step"><div class="n">4</div><h3>Te lo dice</h3><p>Escuchas la respuesta mientras sigues jugando, y las acciones se ejecutan solas.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="funciones" style="padding-top:24px">
+    <div class="wrap center">
+      <div class="eyebrow">Funciones</div>
+      <h2>Mucho más que un chat por voz</h2>
+      <p class="sub">Controla tus apps con UI Automation de Windows: sin APIs, sin claves, sin configurar nada.</p>
+      <div class="features" style="text-align:left">
+        <div class="feat"><div class="emoji">🎮</div><h3>Copiloto de juego</h3><p>Mira tu pantalla y te dice qué hacer: builds, estrategia, misiones. Revisa el parche actual para no darte info vieja.</p><div class="say">"¿Qué le armo a Tristana?"</div></div>
+        <div class="feat"><div class="emoji">🎵</div><h3>Spotify</h3><p>Pone canciones o tus playlists, pausa, salta, da me gusta y agrega a listas.</p><div class="say">"Pon mi lista de anime"</div></div>
+        <div class="feat"><div class="emoji">▶️</div><h3>YouTube</h3><p>Busca y reproduce videos, adelanta, cambia la velocidad, activa subtítulos y cierra pestañas que suenan.</p><div class="say">"Adelanta a la mitad"</div></div>
+        <div class="feat"><div class="emoji">🎧</div><h3>Discord y audio</h3><p>Te silencia o ensordece en Discord, apaga tu micrófono y cambia entre audífonos y parlantes.</p><div class="say">"Cámbiate a los audífonos"</div></div>
+        <div class="feat"><div class="emoji">🪟</div><h3>Ventanas y apps</h3><p>Abre, cierra y mueve ventanas entre pantallas o a media pantalla. Abre webs y carpetas.</p><div class="say">"Manda Chrome a la otra pantalla"</div></div>
+        <div class="feat"><div class="emoji">⏱️</div><h3>Temporizadores</h3><p>Recordatorios por voz, a una hora o repetidos, que te avisa en voz alta.</p><div class="say">"Avísame en 5 minutos del dragón"</div></div>
+        <div class="feat"><div class="emoji">🎬</div><h3>Capturas y clips</h3><p>Guarda capturas, graba el juego o guarda lo último que pasó como clip.</p><div class="say">"Guarda esa jugada"</div></div>
+        <div class="feat"><div class="emoji">✍️</div><h3>Dictado y rutinas</h3><p>Escribe en la ventana que usabas y agrupa varias acciones en una rutina.</p><div class="say">"Modo stream"</div></div>
+        <div class="feat"><div class="emoji">🧠</div><h3>Entiende lo que quisiste decir</h3><p>Si la transcripción sale mal, deduce la intención por el contexto. Y si no está seguro, te pregunta.</p><div class="say">"Creo que quisiste decir…"</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="instalar" style="padding-top:24px">
+    <div class="wrap split">
+      <div>
+        <div class="eyebrow">Instalar</div>
+        <h2>Listo en dos minutos</h2>
+        <p class="sub">Clona el repo, instala las dependencias y ábrelo. Queda en la bandeja del sistema, siempre a mano.</p>
+<pre><span class="c"># Requiere Python 3.11+ y Claude Code con sesión iniciada</span>
+git clone https://github.com/farriagadal/desk-ai.git
+cd desk-ai
+pip install -r requirements.txt
+pythonw app.py</pre>
+        <p class="req">Necesitas Windows 10/11, una suscripción de Claude con <a href="https://claude.com/claude-code">Claude Code</a> y, idealmente, una GPU NVIDIA.</p>
+      </div>
+      <div>
+        <div class="eyebrow">Atajos</div>
+        <h2>Todo desde el teclado</h2>
+        <table>
+          <tr><td><kbd>Ctrl</kbd> + <kbd>Win</kbd></td><td>Mantener para preguntar</td></tr>
+          <tr><td><kbd>F9</kbd></td><td>Solo dictar, sin enviar</td></tr>
+          <tr><td><kbd>F8</kbd></td><td>Adjuntar captura</td></tr>
+          <tr><td><kbd>F10</kbd></td><td>Enviar</td></tr>
+          <tr><td><kbd>F11</kbd></td><td>Callar o activar la voz</td></tr>
+          <tr><td><kbd>F6</kbd></td><td>Ventana ↔ overlay</td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq" style="padding-top:24px">
+    <div class="wrap center">
+      <div class="eyebrow">Preguntas</div>
+      <h2>Preguntas frecuentes</h2>
+      <div class="faq" style="text-align:left">
+        <details><summary>¿Es gratis?</summary><p>Desk AI es gratis y de código abierto (MIT). Usa tu suscripción de Claude a través de Claude Code, así que no pagas API ni necesitas claves.</p></details>
+        <details><summary>¿Qué pasa con mi privacidad?</summary><p>Tu voz se transcribe en tu PC con Whisper. A Claude solo llega el texto de tu pregunta y, si la necesita, la captura de pantalla. La ventana de Desk AI se excluye de sus propias capturas.</p></details>
+        <details><summary>¿Afecta el rendimiento del juego?</summary><p>Whisper usa poca memoria de video (int8) y, si el juego acapara la GPU, la transcripción pasa a la CPU automáticamente. El overlay nunca le quita el foco al juego.</p></details>
+        <details><summary>¿Funciona sin GPU NVIDIA?</summary><p>Sí, con un modelo de Whisper en la CPU. Es más lento, pero funciona.</p></details>
+        <details><summary>¿En qué idiomas está?</summary><p>Por ahora en español. Las contribuciones para otros idiomas son bienvenidas en GitHub.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:24px;padding-bottom:40px">
+    <div class="wrap"><div class="cta">
+      <img src="/logo.svg" alt="">
+      <h2>Tu PC, a un atajo de distancia.</h2>
+      <p class="sub" style="margin:0 auto">Descárgalo, dale una estrella y ayuda a mejorarlo.</p>
+      <div class="ctas">
+        <a class="btn btn-primary" href="https://github.com/farriagadal/desk-ai#instalación">Descargar gratis</a>
+        <a class="btn btn-ghost" href="https://github.com/farriagadal/desk-ai">Ver el código</a>
+      </div>
+    </div></div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <span>© 2026 Desk AI · Licencia MIT · Hecho por <a href="https://github.com/farriagadal">Fernando Arriagada</a></span>
+      <span>No afiliado a Anthropic, Microsoft, Spotify, Discord ni Google.</span>
+    </div>
+  </footer>
+
+  <script>
+    // Demo: simula una consulta tras otra en el overlay.
+    const turns = [
+      { q: "qué bild le armo a la tracks en el leage", a: "Creo que quisiste decir Tristana: Filo del Infinito, Grebas de Berserker y después Recordatorio Mortal." },
+      { q: "pon bat bani en espotifai", a: "Listo, sonando Bad Bunny en Spotify." },
+      { q: "avísame en cinco minutos que sale el dragón", a: "Hecho, te aviso en cinco minutos." },
+      { q: "silénciame en discord", a: "Te silencié en Discord." },
+    ];
+    const $ = (id) => document.getElementById(id);
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    async function type(el, text, ms) {
+      el.textContent = "";
+      for (const ch of text) { el.textContent += ch; await sleep(ms); }
+    }
+    async function loop() {
+      for (let i = 0; ; i = (i + 1) % turns.length) {
+        const t = turns[i];
+        $("q").textContent = ""; $("a").innerHTML = "";
+        $("keys").classList.add("on");
+        $("state").innerHTML = '<span class="rec"></span>Escuchando';
+        $("a").innerHTML = '<div class="wave">' + "<span></span>".repeat(18) + "</div>";
+        await sleep(1500);
+        $("keys").classList.remove("on");
+        $("state").textContent = "Pensando…";
+        $("a").textContent = "";
+        $("q").textContent = "“" + t.q + "”";
+        await sleep(700);
+        $("state").textContent = "🔊 Hablando";
+        await type($("a"), t.a, 22);
+        await sleep(2600);
+      }
+    }
+    if (reduced) { $("q").textContent = "“" + turns[0].q + "”"; $("a").textContent = turns[0].a; }
+    else loop();
+  </script>
+</body>
+</html>
