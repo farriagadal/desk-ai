@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://desk-ai.vercel.app">Sitio web</a> ·
+  <a href="https://desk-ai-pi.vercel.app">Sitio web</a> ·
   <a href="#instalación">Instalación</a> ·
   <a href="#qué-puede-hacer">Qué puede hacer</a> ·
   <a href="LICENSE">MIT</a>
